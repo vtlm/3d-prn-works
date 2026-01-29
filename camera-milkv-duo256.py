@@ -21,18 +21,18 @@ HR911105A_height=13.5
 
 def build_fix_angle():
     with BuildPart() as fix:
-        Box(30,30,30)
-        # with BuildSketch():
-        #     with BuildLine():
-        #         Polyline(
-        #             (20,0),
-        #             (0,0),
-        #             (0,5),
-        #             (20,25),
-        #             (20,0)
-        #         )
-        #     make_face()
-        # extrude(amount=2)
+        # Box(30,30,30)
+        with BuildSketch():
+            with BuildLine():
+                Polyline(
+                    (20,0),
+                    (0,0),
+                    (0,5),
+                    (20,25),
+                    (20,0)
+                )
+            make_face()
+        extrude(amount=2)
         RigidJoint(label='fix',joint_location=Location((5,0,1)))
 
     return fix
@@ -82,13 +82,13 @@ def build_eth_board_as_compound(board_width=20, board_length=30, board_thickness
         board=Box(board_width, board_length ,board_thickness)
         RigidJoint(label='fix_eth_socket', joint_location=Location((0,-board_length/2-out_shift,15.3-HR911105A_height-board_thickness/2)))
         RigidJoint(label='fix_pin_header', joint_location=Location((0,board_length/2-pin_header_in_shift,0)))
-        RigidJoint(label='fix_stand', joint_location=Location((0,board_length,0)))
+        RigidJoint(label='fix_stand', joint_location=Location((0,board_length/2,0),(0,90,0)))
 
     eth_board.joints['fix_eth_socket'].connect_to(eth_socket.joints['fix'])
     eth_board.joints['fix_pin_header'].connect_to(pin_header1.joints['fix'])
     eth_board.joints['fix_stand'].connect_to(fix_angle.joints['fix'])
 
-    eth_board_comp = Compound(label="eth_boardc", children=[board,eth_socket.part,pin_header1.part])
+    eth_board_comp = Compound(label="eth_boardc", children=[board,eth_socket.part,pin_header1.part,fix_angle.part])
     joint=RigidJoint(label="fix", to_part=eth_board_comp, joint_location=Location((0,board_length/2-pin_header_in_shift,0),(0,180,0)))
     eth_board_comp.joints['fix']=joint
 
